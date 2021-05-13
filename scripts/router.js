@@ -5,7 +5,7 @@ export const router = {};
 /**
  * Changes the "page" (state) that your SPA app is currently set to
  */
-router.setState = function() {
+router.setState = function(state, entry = {}) {
   /**
    * - There are three states that your SPA app will have
    *    1. The home page
@@ -35,4 +35,44 @@ router.setState = function() {
    *    1. You may add as many helper functions in this file as you like
    *    2. You may modify the parameters of setState() as much as you like
    */
+
+  let body = document.querySelector('body');
+  let header_text = document.querySelector('header h1')
+
+  if(state == "home"){
+
+    window.history.pop
+    body.removeAttribute("class");
+    header_text.innerHTML = "Journal Entries";
+    window.history.replaceState({}, "",  ' ');
+  } else if(state == "entry"){
+    let entryNumber = getEntryNumber(entry)
+    header_text.innerHTML = "Entry " + entryNumber;
+    body.removeAttribute("class");
+    body.classList.add("single-entry");
+    window.history.pushState({}, "", window.location.href + '#entry' + entryNumber);
+    document.querySelector('entry-page').remove();
+    let entryPage = document.createElement('entry-page');
+    entryPage.entry = entry;
+    document.querySelector('body').appendChild(entryPage);
+  } else if(state == "settings") {
+    body.removeAttribute("class");
+    body.classList.add("settings");
+    window.history.pushState({}, "",  '#settings');
+    header_text.innerHTML = "Settings";
+  }
 }
+
+
+function getEntryNumber(entry){
+  let index = 0;
+  let entries = document.querySelectorAll('journal-entry');
+
+  for(let i = 0; i < entries.length; i++){
+    if(entries[i].entry.title == entry.title && entries[i].entry.date == entry.date && entries[i].entry.content == entry.content ){
+      return i + 1;
+    }
+  }
+  return -1;
+}
+
